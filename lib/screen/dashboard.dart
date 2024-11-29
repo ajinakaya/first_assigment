@@ -12,7 +12,6 @@ class DashboardScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Row containing Simple Interest and Area of Circle buttons.
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
