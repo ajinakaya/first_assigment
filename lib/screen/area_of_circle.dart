@@ -1,47 +1,63 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
-// Screen to calculate the area of a circle.
 class AreaOfCircleScreen extends StatefulWidget {
   @override
   _AreaOfCircleScreenState createState() => _AreaOfCircleScreenState();
 }
 
 class _AreaOfCircleScreenState extends State<AreaOfCircleScreen> {
-  final TextEditingController radiusController = TextEditingController(); // Controller for the radius input field.
-  double result = 0; // Variable to store the calculated area.
+  final _formKey = GlobalKey<FormState>(); // GlobalKey to manage the form state.
+  final TextEditingController radiusController = TextEditingController(); // Controller for radius input.
+  double? _area; // Variable to store the calculated area.
 
-  // Function to calculate the area of a circle.
-  void calculateArea() {
-    double radius = double.tryParse(radiusController.text) ?? 0;
-    setState(() {
-      result = 3.14159 * radius * radius;
-    });
+  // Function to calculate the area of the circle.
+  void _calculateArea() {
+    if (_formKey.currentState!.validate()) { // Validating form inputs.
+      double radius = double.parse(radiusController.text); // Parsing the radius input.
+      setState(() {
+        _area = pi * radius * radius; // Area formula: π * r².
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Area of Circle')),
+      appBar: AppBar(title: Text('Area of Circle')), // AppBar with title.
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Input field for the radius.
-            TextField(
-              controller: radiusController,
-              decoration: InputDecoration(labelText: 'Radius'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            // Button to calculate the area.
-            ElevatedButton(
-              onPressed: calculateArea,
-              child: Text('Calculate'),
-            ),
-            SizedBox(height: 20),
-            // Displays the calculated area.
-            Text('Area: ${result.toStringAsFixed(2)} sq. units'),
-          ],
+        padding: const EdgeInsets.all(16.0), // Padding around the form.
+        child: Form(
+          key: _formKey, // Form key for validation.
+          child: Column(
+            children: [
+              // TextFormField for radius input.
+              TextFormField(
+                controller: radiusController, // Controller to get value.
+                decoration: InputDecoration(labelText: 'Radius'), // Label for the input.
+                keyboardType: TextInputType.number, // Input type for numbers.
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the radius'; // Validation message.
+                  }
+                  return null; // Return null if input is valid.
+                },
+              ),
+              SizedBox(height: 20),
+              // Button to calculate the area.
+              ElevatedButton(
+                onPressed: _calculateArea, // On press, calculate the area.
+                child: Text('Calculate Area'),
+              ),
+              SizedBox(height: 20),
+              // Display the calculated area if it's not null.
+              if (_area != null)
+                Text(
+                  'Area: $_area', // Display the area result.
+                  style: TextStyle(fontSize: 18),
+                ),
+            ],
+          ),
         ),
       ),
     );
