@@ -1,73 +1,113 @@
 import 'package:flutter/material.dart';
 
-// Screen to perform basic arithmetic operations.
-class ArithmeticViewScreen extends StatefulWidget {
+class ArithmeticView extends StatefulWidget {
+  const ArithmeticView({super.key});
+
   @override
-  _ArithmeticViewScreenState createState() => _ArithmeticViewScreenState();
+  State<ArithmeticView> createState() => _ArithmeticViewState();
 }
 
-class _ArithmeticViewScreenState extends State<ArithmeticViewScreen> {
-  final TextEditingController num1Controller = TextEditingController(); // Controller for the first number input field.
-  final TextEditingController num2Controller = TextEditingController(); // Controller for the second number input field.
-  double result = 0; // Variable to store the result of the operation.
+class _ArithmeticViewState extends State<ArithmeticView> {
 
-  // Function to perform arithmetic operations.
-  void performOperation(String operation) {
-    double num1 = double.tryParse(num1Controller.text) ?? 0;
-    double num2 = double.tryParse(num2Controller.text) ?? 0;
+  // TextEditingController
+  final firstController = TextEditingController(text: '2');
+  final secondController = TextEditingController(text: '3');
+  int result = 0;
 
-    setState(() {
-      switch (operation) {
-        case '+':
-          result = num1 + num2;
-          break;
-        case '-':
-          result = num1 - num2;
-          break;
-        case '*':
-          result = num1 * num2;
-          break;
-        case '/':
-          result = num2 != 0 ? num1 / num2 : 0; // Avoid division by zero.
-          break;
-      }
-    });
-  }
+  // Global key for form state
+  final myKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Arithmetic View')),
+      appBar: AppBar(
+        title: const Text('Arithmetic View'),
+        centerTitle: true,
+        elevation: 0,
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Input field for the first number.
-            TextField(
-              controller: num1Controller,
-              decoration: InputDecoration(labelText: 'Number 1'),
-              keyboardType: TextInputType.number,
-            ),
-            // Input field for the second number.
-            TextField(
-              controller: num2Controller,
-              decoration: InputDecoration(labelText: 'Number 2'),
-              keyboardType: TextInputType.number,
-            ),
-            // Row of buttons for different operations.
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(onPressed: () => performOperation('+'), child: Text('+')),
-                ElevatedButton(onPressed: () => performOperation('-'), child: Text('-')),
-                ElevatedButton(onPressed: () => performOperation('*'), child: Text('*')),
-                ElevatedButton(onPressed: () => performOperation('/'), child: Text('/')),
-              ],
-            ),
-            SizedBox(height: 20),
-            // Displays the result of the operation.
-            Text('Result: ${result.toStringAsFixed(2)}'),
-          ],
+        padding: const EdgeInsets.all(10),
+        child: Form(
+          key: myKey,
+          child: Column(
+            children: [
+              TextFormField(
+                // onChanged: (value) {
+                //   // value lai int ma convert garera first ma store garako
+                //   first = int.tryParse(value) ?? 0;
+                // },
+                controller: firstController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Enter first number',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter first no';
+                  }
+                  return null;
+                },
+              ),
+              // Invisible box
+              const SizedBox(height: 10),
+              TextFormField(
+                // onChanged: (value) {
+                //   second = int.tryParse(value) ?? 0;
+                // },
+                controller: secondController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Enter second number',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter second no';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+
+              Text(
+                'Result: $result',
+                style: const TextStyle(fontSize: 30),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Page lai refresh garako
+                    if (myKey.currentState!.validate()) {
+                      setState(() {
+                        result = int.parse(firstController.text) +
+                            int.parse(secondController.text);
+                      });
+                    }
+                  },
+                  child: const Text('Addition'),
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (myKey.currentState!.validate()) {
+                      setState(() {
+                        result = int.parse(firstController.text) -
+                            int.parse(secondController.text);
+                      });
+                    }
+                  },
+                  child: const Text('Subtraction'),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
