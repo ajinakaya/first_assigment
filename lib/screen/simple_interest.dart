@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 
-// Screen to calculate simple interest.
 class SimpleInterestScreen extends StatefulWidget {
   @override
   _SimpleInterestScreenState createState() => _SimpleInterestScreenState();
 }
 
 class _SimpleInterestScreenState extends State<SimpleInterestScreen> {
-  // Controllers for input fields.
+  final _formKey = GlobalKey<FormState>(); // Key for the form.
   final TextEditingController principalController = TextEditingController();
   final TextEditingController rateController = TextEditingController();
   final TextEditingController timeController = TextEditingController();
 
-  double result = 0; // Variable to store the calculated simple interest.
+  double? _result;
 
-  // Function to calculate simple interest.
-  void calculateInterest() {
-    double principal = double.tryParse(principalController.text) ?? 0;
-    double rate = double.tryParse(rateController.text) ?? 0;
-    double time = double.tryParse(timeController.text) ?? 0;
+  void _calculateInterest() {
+    if (_formKey.currentState!.validate()) {
+      // Parse input values.
+      double principal = double.parse(principalController.text);
+      double rate = double.parse(rateController.text);
+      double time = double.parse(timeController.text);
 
-    setState(() {
-      result = (principal * rate * time) / 100;
-    });
+      // Calculate simple interest.
+      setState(() {
+        _result = (principal * rate * time) / 100;
+      });
+    }
   }
 
   @override
@@ -31,36 +33,56 @@ class _SimpleInterestScreenState extends State<SimpleInterestScreen> {
       appBar: AppBar(title: Text('Simple Interest')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Input field for principal amount.
-            TextField(
-              controller: principalController,
-              decoration: InputDecoration(labelText: 'Principal'),
-              keyboardType: TextInputType.number,
-            ),
-            // Input field for rate of interest.
-            TextField(
-              controller: rateController,
-              decoration: InputDecoration(labelText: 'Rate (%)'),
-              keyboardType: TextInputType.number,
-            ),
-            // Input field for time period.
-            TextField(
-              controller: timeController,
-              decoration: InputDecoration(labelText: 'Time (years)'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            // Button to calculate simple interest.
-            ElevatedButton(
-              onPressed: calculateInterest,
-              child: Text('Calculate'),
-            ),
-            SizedBox(height: 20),
-            // Displays the calculated simple interest.
-            Text('Simple Interest: \$${result.toStringAsFixed(2)}'),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: principalController,
+                decoration: InputDecoration(labelText: 'Principal'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the principal amount';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: rateController,
+                decoration: InputDecoration(labelText: 'Rate (%)'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the rate of interest';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: timeController,
+                decoration: InputDecoration(labelText: 'Time (Years)'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the time period';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _calculateInterest,
+                child: Text('Calculate Interest'),
+              ),
+              SizedBox(height: 20),
+              if (_result != null)
+                Text(
+                  'Simple Interest: $_result',
+                  style: TextStyle(fontSize: 18),
+                ),
+            ],
+          ),
         ),
       ),
     );
