@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen/dashboard.dart'; // Correct path to dashboard.dart
+import 'screen/dashboard.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
       title: 'First Assignment',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: DashboardScreen(),
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // Hides the debug banner in the app
     );
   }
 }
